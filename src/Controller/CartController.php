@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\ProductRepository;
+use App\Service\CartService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,24 +59,10 @@ class CartController extends AbstractController
     /**
      * @Route("/cart/add/{id}", name="cart_add")
      */
-    public function add($id, RequestStack $rs): Response
+    public function add($id, CartService $cs): Response
     {
-        // On va créer une SESSION grâce à la classe RequestStack
-        $session = $rs->getSession();
 
-        // On récupère l'attribut de SESSION cart s'il existe, sinon , on récupère un tableau vide
-        $cart = $session->get('cart', []);
-        // Le tableau cart contient les quantités commandées des produits
-
-        // Si le produit existe déjà dans le panier, on incrémente la quantité
-        if (!empty($cart[$id])) {
-            $cart[$id]++;
-        } else {
-            // l'index du tableau cart est l'id du produit
-            $cart[$id] = 1;
-        }
-        // Je sauvegarde l'état de monm panier à l'attribut de session 'cart'
-        $session->set('cart', $cart);
+        $cs->add($id);
 
         return $this->redirectToRoute('app_cart');
     }
@@ -83,19 +70,9 @@ class CartController extends AbstractController
     /**
      * @Route("/cart/remove/{id}", name="cart_remove")
      */
-    public function remove($id, RequestStack $rs)
+    public function remove($id, CartService $cs)
     {
-        $session = $rs->getSession();
-        $cart = $session->get('cart', []);
-
-        // Si le produit existe dans le panier, on le supprime du tableau $cart via unset()
-        if (!empty($cart[$id])) {
-            unset($cart[$id]);
-        }
-
-        // On sauvegarde l'état du panier
-        $session->set('cart', $cart);
-
+        $cs->remove($id);
         return $this->redirectToRoute('app_cart');
     }
 
