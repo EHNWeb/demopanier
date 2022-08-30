@@ -4,11 +4,15 @@
 {% endblock %}
 
 {% block body %}
-
-	<h1 class="text-center">Votre panier</h1>
-
+    <h1 class="text-center">Votre panier</h1>
+    
 	{# On test si le panier est vide #}
 	{% if items %}
+
+        <div class="text-center">
+            <a href="{{ path('cart_delete') }}" class="btn btn-danger">Vider la panier <i class="fa-solid fa-trash-can"></i></a>
+        </div>
+
 		<table class="table text-center">
 			<thead>
 				<tr>
@@ -52,7 +56,7 @@
 			</tfoot>
         </table>
     {% else %}
-        <p>Votre panier vide !</p>
+        <p class="text-center">Votre panier vide !</p>
     {% endif %}
 
 {% endblock %}

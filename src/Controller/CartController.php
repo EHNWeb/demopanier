@@ -46,11 +46,12 @@ class CartController extends AbstractController
             $totalPanier += $totalItem;
         }
 
+        $session->set('totalPanier', $totalPanier);
+
 
         return $this->render('cart/index.html.twig', [
             'items' => $cartWithData,
             'totalPanier' => $totalPanier,
-            'quantityPanier' => $quantityPanier
         ]);
     }
 
@@ -124,4 +125,15 @@ class CartController extends AbstractController
 
         return $this->redirectToRoute('app_cart');
     }
+
+    /**
+     * @Route("/cart/delete", name="cart_delete")
+     */
+     public function delete(RequestStack $rs): Response
+     {
+        $session = $rs->getSession();
+        $session->remove('cart');
+
+        return $this->redirectToRoute('app_cart');
+     }
 }
