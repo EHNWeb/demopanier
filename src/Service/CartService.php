@@ -72,4 +72,5 @@ class CartService {
         $session = $this->rs->getSession();
         $session->remove('cart');
     }
+
 }
