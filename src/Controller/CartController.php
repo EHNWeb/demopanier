@@ -19,6 +19,9 @@ class CartController extends AbstractController
         $session = $rs->getSession();
         $cart = $session->get('cart', []);
 
+        // Quantité totale du panier
+        $quantityPanier = 0;
+
         // on crée un nouveau tableau qui contiendra des objets Product et les quantités de chauque OBJET
         $cartWithData = [];
 
@@ -31,15 +34,16 @@ class CartController extends AbstractController
                 'product' => $repo->find($id),
                 'quantity' => $quantity
             ];
+            $quantityPanier += $quantity;
         }
+
+        $session->set('totalQuantity', $quantityPanier);
 
         // Pour chaque produit dans mon panier, j erécupère le sous total
         $totalPanier = 0;
-        $quantityPanier = 0;
         foreach ($cartWithData as $item) {
             $totalItem = $item['product']->getPrice() * $item['quantity'];
             $totalPanier += $totalItem;
-            $quantityPanier += $item['quantity'];
         }
 
 
@@ -89,6 +93,33 @@ class CartController extends AbstractController
         }
 
         // On sauvegarde l'état du panier
+        $session->set('cart', $cart);
+
+        return $this->redirectToRoute('app_cart');
+    }
+
+    /**
+     * @Route("/cart/decrease/{id}", name="cart_decrease")
+     */
+    public function decrease($id, RequestStack $rs): Response
+    {
+        // On va créer une SESSION grâce à la classe RequestStack
+        $session = $rs->getSession();
+
+        // On récupère l'attribut de SESSION cart s'il existe, sinon , on récupère un tableau vide
+        $cart = $session->get('cart', []);
+        // Le tableau cart contient les quantités commandées des produits
+
+        // Si le produit existe déjà dans le panier, on incrémente la quantité
+        if (!empty($cart[$id])) {
+            if ($cart[$id] > 1){
+                $cart[$id]--;
+            } else {
+                unset($cart[$id]);
+            }
+        }
+
+        // Je sauvegarde l'état de monm panier à l'attribut de session 'cart'
         $session->set('cart', $cart);
 
         return $this->redirectToRoute('app_cart');
