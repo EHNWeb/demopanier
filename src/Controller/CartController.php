@@ -36,13 +36,13 @@ class CartController extends AbstractController
         // Pour chaque produit dans mon panier, j erécupère le sous total
         $totalPanier = 0;
         $quantityPanier = 0;
-        foreach($cartWithData as $item) {
+        foreach ($cartWithData as $item) {
             $totalItem = $item['product']->getPrice() * $item['quantity'];
             $totalPanier += $totalItem;
             $quantityPanier += $item['quantity'];
         }
 
- 
+
         return $this->render('cart/index.html.twig', [
             'items' => $cartWithData,
             'totalPanier' => $totalPanier,
@@ -70,6 +70,25 @@ class CartController extends AbstractController
             $cart[$id] = 1;
         }
         // Je sauvegarde l'état de monm panier à l'attribut de session 'cart'
+        $session->set('cart', $cart);
+
+        return $this->redirectToRoute('app_cart');
+    }
+
+    /**
+     * @Route("/cart/remove/{id}", name="cart_remove")
+     */
+    public function remove($id, RequestStack $rs)
+    {
+        $session = $rs->getSession();
+        $cart = $session->get('cart', []);
+
+        // Si le produit existe dans le panier, on le supprime du tableau $cart via unset()
+        if (!empty($cart[$id])) {
+            unset($cart[$id]);
+        }
+
+        // On sauvegarde l'état du panier
         $session->set('cart', $cart);
 
         return $this->redirectToRoute('app_cart');

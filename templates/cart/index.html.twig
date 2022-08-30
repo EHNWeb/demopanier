@@ -27,7 +27,7 @@
 						<td>{{ item.quantity }}</td>
 						<td>{{ (item.product.price * item.quantity)|number_format(2) }}</td>
 						<td>
-							<a href="#" class="btn btn-danger">
+							<a href="{{ path('cart_remove', {id: item.product.id}) }}" class="btn btn-danger">
 								<i class="fa-solid fa-trash-can"></i>
 							</a>
 						</td>
