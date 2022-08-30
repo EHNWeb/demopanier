@@ -45,4 +45,31 @@ class CartService {
         // On sauvegarde l'état du panier
         $session->set('cart', $cart);
     }
+    
+    public function decrement($id) {
+        // On va créer une SESSION grâce à la classe RequestStack
+        $session = $this->rs->getSession();
+
+        // On récupère l'attribut de SESSION cart s'il existe, sinon , on récupère un tableau vide
+        $cart = $session->get('cart', []);
+        // Le tableau cart contient les quantités commandées des produits
+
+        // Si le produit existe déjà dans le panier, on incrémente la quantité
+        if (!empty($cart[$id])) {
+            if ($cart[$id] > 1){
+                $cart[$id]--;
+            } else {
+                unset($cart[$id]);
+            }
+        }
+
+        // Je sauvegarde l'état de monm panier à l'attribut de session 'cart'
+        $session->set('cart', $cart);
+    }
+
+    public function empty()
+    {
+        $session = $this->rs->getSession();
+        $session->remove('cart');
+    }
 }

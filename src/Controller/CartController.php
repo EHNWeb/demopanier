@@ -79,26 +79,10 @@ class CartController extends AbstractController
     /**
      * @Route("/cart/decrease/{id}", name="cart_decrease")
      */
-    public function decrease($id, RequestStack $rs): Response
+    public function decrease($id, CartService $cs): Response
     {
-        // On va créer une SESSION grâce à la classe RequestStack
-        $session = $rs->getSession();
 
-        // On récupère l'attribut de SESSION cart s'il existe, sinon , on récupère un tableau vide
-        $cart = $session->get('cart', []);
-        // Le tableau cart contient les quantités commandées des produits
-
-        // Si le produit existe déjà dans le panier, on incrémente la quantité
-        if (!empty($cart[$id])) {
-            if ($cart[$id] > 1){
-                $cart[$id]--;
-            } else {
-                unset($cart[$id]);
-            }
-        }
-
-        // Je sauvegarde l'état de monm panier à l'attribut de session 'cart'
-        $session->set('cart', $cart);
+        $cs->decrement($id);
 
         return $this->redirectToRoute('app_cart');
     }
@@ -106,10 +90,9 @@ class CartController extends AbstractController
     /**
      * @Route("/cart/delete", name="cart_delete")
      */
-     public function delete(RequestStack $rs): Response
+     public function delete(CartService $cs): Response
      {
-        $session = $rs->getSession();
-        $session->remove('cart');
+        $cs->empty();
 
         return $this->redirectToRoute('app_cart');
      }
