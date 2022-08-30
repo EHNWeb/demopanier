@@ -27,15 +27,16 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
-                        <a class="nav-link active" aria-current="page" href="#">Liste des produits</a>
-                        <a class="nav-link" href="#">Panier</a>
+                        <a class="nav-link active" aria-current="page" href="#">[ Liste des produits <i class="fa-solid fa-cart-arrow-down"></i> ]</a>
+                        <a class="nav-link" href="#">[ Panier <i class="fa-solid fa-cart-shopping"></i> ]</a>
                     </div>
                 </div>
             </div>
         </nav>
-
-        {% block body %}{% endblock %}
-
+        
+        <div class="container">
+                {% block body %}{% endblock %}
+        </div>
         {# Font Awesomw#}
 		<script src="https://kit.fontawesome.com/032b0d3637.js" crossorigin="anonymous"></script>
 
