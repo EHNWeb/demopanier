@@ -19,6 +19,8 @@ class ProductFixtures extends Fixture
             $product->setTitle($faker->sentence(3, false))
                     ->setImage($faker->imageUrl)
                     ->setPrice($faker->randomFloat(2, 10, 100));
+            
+            $manager->persist($product);
         }
 
         $manager->flush();
