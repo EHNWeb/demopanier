@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,10 +13,28 @@ class CartController extends AbstractController
     /**
      * @Route("/cart", name="app_cart")
      */
-    public function index(): Response
+    public function index(RequestStack $rs, ProductRepository $repo): Response
     {
+        // On recupère la SESSION
+        $session = $rs->getSession();
+        $cart = $session->get('cart', []);
+
+        // on crée un nouveau tableau qui contiendra des objets Product et les quantités de chauque OBJET
+        $cartWithData = [];
+
+        // $cartWithData est un tableau multidimensionnel:
+        // Pour chaque ID qui se trouve dans le panier, nous allons créer un nouveau tableau dans $cartWithData qui contiendra 2 cases:
+        // Product, Quantity
+        foreach ($cart as $id => $quantity) {
+            // On créer une nouvelle case dans le tableau $cartWithData
+            $cartWithData[] = [
+                'product' => $repo->find($id),
+                'quantity' => $quantity
+            ];
+        }
+ 
         return $this->render('cart/index.html.twig', [
-            'controller_name' => 'CartController',
+            'items' => $cartWithData,
         ]);
     }
 
@@ -40,7 +59,5 @@ class CartController extends AbstractController
         }
         // Je sauvegarde l'état de monm panier à l'attribut de session 'cart'
         $session->set('cart', $cart);
-
-        dd($session->get('cart'));
     }
 }
