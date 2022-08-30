@@ -32,16 +32,28 @@ class CartController extends AbstractController
                 'quantity' => $quantity
             ];
         }
+
+        // Pour chaque produit dans mon panier, j erécupère le sous total
+        $totalPanier = 0;
+        $quantityPanier = 0;
+        foreach($cartWithData as $item) {
+            $totalItem = $item['product']->getPrice() * $item['quantity'];
+            $totalPanier += $totalItem;
+            $quantityPanier += $item['quantity'];
+        }
+
  
         return $this->render('cart/index.html.twig', [
             'items' => $cartWithData,
+            'totalPanier' => $totalPanier,
+            'quantityPanier' => $quantityPanier
         ]);
     }
 
     /**
      * @Route("/cart/add/{id}", name="cart_add")
      */
-    public function add($id, RequestStack $rs)
+    public function add($id, RequestStack $rs): Response
     {
         // On va créer une SESSION grâce à la classe RequestStack
         $session = $rs->getSession();
@@ -59,5 +71,7 @@ class CartController extends AbstractController
         }
         // Je sauvegarde l'état de monm panier à l'attribut de session 'cart'
         $session->set('cart', $cart);
+
+        return $this->redirectToRoute('app_cart');
     }
 }

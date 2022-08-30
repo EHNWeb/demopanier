@@ -1,8 +1,47 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}demoPanier{% endblock %}
+{% block title %}demoPanier
+{% endblock %}
 
 {% block body %}
 
+	<h1 class="text-center">Votre panier</h1>
 
-{% endblock %}
+	{# On test si le panier est vide #}
+	{% if items %}
+		<table class="table text-center">
+			<thead>
+				<tr>
+					<th>Produit</th>
+					<th>Prix (€)</th>
+					<th>Quantité</th>
+					<th>Total (€)</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for item in items %}
+					<tr>
+						<td>{{ item.product.title }}</td>
+						<td>{{ item.product.price|number_format(2) }}</td>
+						<td>{{ item.quantity }}</td>
+						<td>{{ (item.product.price * item.quantity)|number_format(2) }}</td>
+						<td>
+							<a href="#" class="btn btn-danger">
+								<i class="fa-solid fa-trash-can"></i>
+							</a>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+			<tfoot>
+				<tr class="fw-bold">
+					<td colspan="2" class="text-end">Total:</td>
+					<td>{{ quantityPanier }} article(s)</td>
+					<td>{{ totalPanier|number_format(2) }}</td>
+                    <td></td>
+				</tr>
+			</tfoot>
+		</td>
+	</tr>
+</tfoot></table>{% else %}<p>Votre panier vide !</p>{% endif %}{% endblock %}
