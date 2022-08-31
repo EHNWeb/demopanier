@@ -2,6 +2,7 @@
 namespace App\Service;
 
 use App\Repository\ProductRepository;
+use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class CartService {
@@ -73,4 +74,49 @@ class CartService {
         $session->remove('cart');
     }
 
+    public function getCartWithData()
+    {
+        // On recupère la SESSION
+        $session = $this->rs->getSession();
+        $cart = $session->get('cart', []);
+
+        // Quantité totale du panier
+        $quantityPanier = 0;
+
+        // on crée un nouveau tableau qui contiendra des objets Product et les quantités de chauque OBJET
+        $cartWithData = [];
+
+        // $cartWithData est un tableau multidimensionnel:
+        // Pour chaque ID qui se trouve dans le panier, nous allons créer un nouveau tableau dans $cartWithData qui contiendra 2 cases:
+        // Product, Quantity
+        foreach ($cart as $id => $quantity) {
+            // On créer une nouvelle case dans le tableau $cartWithData
+            $cartWithData[] = [
+                'product' => $this->repo->find($id),
+                'quantity' => $quantity
+            ];
+            $quantityPanier += $quantity;
+        }
+
+        $session->set('totalQuantity', $quantityPanier);
+
+        return $cartWithData;
+    }
+
+    public function getTotalPanier()
+    {
+        $session = $this->rs->getSession();
+        $cartWithData = $this->getCartWithData();
+
+        // Pour chaque produit dans mon panier, j erécupère le sous total
+        $totalPanier = 0;
+        foreach ($cartWithData as $item) {
+            $totalItem = $item['product']->getPrice() * $item['quantity'];
+            $totalPanier += $totalItem;
+        }
+
+        $session->set('totalPanier', $totalPanier);
+
+        return $totalPanier;
+    }
 }

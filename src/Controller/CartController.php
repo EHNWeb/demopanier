@@ -14,41 +14,11 @@ class CartController extends AbstractController
     /**
      * @Route("/cart", name="app_cart")
      */
-    public function index(RequestStack $rs, ProductRepository $repo): Response
+    public function index(CartService $cs): Response
     {
-        // On recupère la SESSION
-        $session = $rs->getSession();
-        $cart = $session->get('cart', []);
 
-        // Quantité totale du panier
-        $quantityPanier = 0;
-
-        // on crée un nouveau tableau qui contiendra des objets Product et les quantités de chauque OBJET
-        $cartWithData = [];
-
-        // $cartWithData est un tableau multidimensionnel:
-        // Pour chaque ID qui se trouve dans le panier, nous allons créer un nouveau tableau dans $cartWithData qui contiendra 2 cases:
-        // Product, Quantity
-        foreach ($cart as $id => $quantity) {
-            // On créer une nouvelle case dans le tableau $cartWithData
-            $cartWithData[] = [
-                'product' => $repo->find($id),
-                'quantity' => $quantity
-            ];
-            $quantityPanier += $quantity;
-        }
-
-        $session->set('totalQuantity', $quantityPanier);
-
-        // Pour chaque produit dans mon panier, j erécupère le sous total
-        $totalPanier = 0;
-        foreach ($cartWithData as $item) {
-            $totalItem = $item['product']->getPrice() * $item['quantity'];
-            $totalPanier += $totalItem;
-        }
-
-        $session->set('totalPanier', $totalPanier);
-
+        $cartWithData = $cs->getCartWithData();
+        $totalPanier = $cs->getTotalPanier();
 
         return $this->render('cart/index.html.twig', [
             'items' => $cartWithData,
